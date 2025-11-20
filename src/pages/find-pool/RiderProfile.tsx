@@ -185,7 +185,12 @@ const RiderProfile = () => {
 
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-foreground font-semibold">Review(125)</h3>
-              <button className="text-primary text-sm font-medium">View all</button>
+              <button 
+                onClick={() => navigate(`/find-pool/reviews/${id}`)}
+                className="text-primary text-sm font-medium"
+              >
+                View all
+              </button>
             </div>
 
             <div className="space-y-0">
@@ -213,6 +218,7 @@ const RiderProfile = () => {
         <Button
           size="icon"
           variant="outline"
+          onClick={() => navigate(`/find-pool/chat/${id}`)}
           className="h-14 w-14 rounded-full flex-shrink-0"
         >
           <MessageCircle className="h-5 w-5" />
