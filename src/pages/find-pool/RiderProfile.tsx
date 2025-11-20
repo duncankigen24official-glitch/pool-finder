@@ -1,13 +1,17 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CheckCircle, MessageCircle, User } from "lucide-react";
+import RatingBreakdown from "@/components/find-pool/RatingBreakdown";
+import ReviewItem from "@/components/find-pool/ReviewItem";
 
 const RiderProfile = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("about");
+  const [hasRequested, setHasRequested] = useState(false);
 
   // Mock data
   const rider = {
@@ -84,7 +88,12 @@ const RiderProfile = () => {
             <div>
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-primary font-semibold">Ride info</h3>
-                <button className="text-success text-sm font-medium">View in map</button>
+                <button 
+                  onClick={() => navigate("/find-pool/map-view", { state: { rideData: rider } })}
+                  className="text-success text-sm font-medium"
+                >
+                  View in map
+                </button>
               </div>
               <div className="space-y-2 mb-4">
                 <div className="flex items-start gap-2">
@@ -162,7 +171,39 @@ const RiderProfile = () => {
           </TabsContent>
 
           <TabsContent value="review" className="p-4">
-            <p className="text-muted-foreground text-center py-8">Reviews coming soon...</p>
+            <RatingBreakdown
+              overallRating={4.5}
+              totalReviews={125}
+              breakdown={{
+                5: 101,
+                4: 12,
+                3: 7,
+                2: 4,
+                1: 2,
+              }}
+            />
+
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-foreground font-semibold">Review(125)</h3>
+              <button className="text-primary text-sm font-medium">View all</button>
+            </div>
+
+            <div className="space-y-0">
+              <ReviewItem
+                userName="Cameron Williamson"
+                userImage="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop"
+                rating={4}
+                date="9 June 2023"
+                comment="Lorem ipsum dolor sit aconsectetur PIgpulvinsce lerisque sit diam at ullamccorper exu ut aliqViverra enimcs auctor fusce aliquam convallis. A mattis massa ualiquam acsd."
+              />
+              <ReviewItem
+                userName="Cameron Williamson"
+                userImage="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop"
+                rating={5}
+                date="8 June 2023"
+                comment="Lorem ipsum dolor sit aconsectetur PIgpulvinsce lerisque sit diam at ullamccorper exu ut aliqViverra enimcs auctor fusce aliquam convallis. A mattis massa ualiquam acsd."
+              />
+            </div>
           </TabsContent>
         </Tabs>
       </div>
@@ -176,8 +217,16 @@ const RiderProfile = () => {
         >
           <MessageCircle className="h-5 w-5" />
         </Button>
-        <Button className="flex-1 h-14 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-semibold">
-          Request ride
+        <Button 
+          onClick={() => setHasRequested(!hasRequested)}
+          variant={hasRequested ? "outline" : "default"}
+          className={`flex-1 h-14 rounded-xl font-semibold ${
+            hasRequested 
+              ? "border-primary text-primary hover:bg-primary/5" 
+              : "bg-primary hover:bg-primary/90 text-primary-foreground"
+          }`}
+        >
+          {hasRequested ? "Withdraw Request" : "Request ride"}
         </Button>
       </div>
     </PageLayout>
