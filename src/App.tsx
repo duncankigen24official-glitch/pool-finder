@@ -8,7 +8,10 @@ import LocationPicker from "./pages/find-pool/LocationPicker";
 import Results from "./pages/find-pool/Results";
 import RiderProfile from "./pages/find-pool/RiderProfile";
 import MapView from "./pages/find-pool/MapView";
+import AllReviews from "./pages/find-pool/AllReviews";
+import Chat from "./pages/find-pool/Chat";
 import OfferPool from "./pages/OfferPool";
+import OfferPoolDetails from "./pages/offer-pool/Details";
 import MyTrip from "./pages/MyTrip";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
@@ -27,7 +30,10 @@ const App = () => (
           <Route path="/find-pool/results" element={<Results />} />
           <Route path="/find-pool/rider/:id" element={<RiderProfile />} />
           <Route path="/find-pool/map-view" element={<MapView />} />
+          <Route path="/find-pool/reviews/:id" element={<AllReviews />} />
+          <Route path="/find-pool/chat/:id" element={<Chat />} />
           <Route path="/offer-pool" element={<OfferPool />} />
+          <Route path="/offer-pool/details" element={<OfferPoolDetails />} />
           <Route path="/my-trip" element={<MyTrip />} />
           <Route path="/profile" element={<Profile />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
