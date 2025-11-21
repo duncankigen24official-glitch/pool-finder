@@ -4,13 +4,8 @@ import PageLayout from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import CarSelectorModal from "@/components/offer-pool/CarSelectorModal";
+import SuccessModal from "@/components/offer-pool/SuccessModal";
 import { Minus, Plus } from "lucide-react";
 
 const OfferPoolDetails = () => {
@@ -23,16 +18,27 @@ const OfferPoolDetails = () => {
   const [availableSeats, setAvailableSeats] = useState("");
   const [facilities, setFacilities] = useState("");
   const [instructions, setInstructions] = useState("");
+  const [showCarSelector, setShowCarSelector] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  const getCarLabel = (carId: string) => {
+    const carMap: { [key: string]: string } = {
+      "audi-a4": "Audi A4 seat",
+      "toyota-matrix": "Toyota matrix seat",
+      "bmw": "Bmw seat",
+      "mercedes": "Mercedes Benz seat",
+      "maruti": "Maruti Suzuki seat",
+      "ford": "Ford seat",
+    };
+    return carMap[carId] || "Select your car";
+  };
 
   const handleContinue = () => {
-    // Handle pool creation
-    console.log({
-      price,
-      selectedCar,
-      availableSeats,
-      facilities,
-      instructions,
-    });
+    setShowSuccess(true);
+  };
+
+  const handleSuccessClose = () => {
+    setShowSuccess(false);
     navigate("/my-trip");
   };
 
@@ -82,16 +88,22 @@ const OfferPoolDetails = () => {
         {/* Your Car */}
         <div>
           <h3 className="text-lg font-semibold text-foreground mb-3">Your car</h3>
-          <Select value={selectedCar} onValueChange={setSelectedCar}>
-            <SelectTrigger className="w-full h-12 bg-card rounded-xl">
-              <SelectValue placeholder="Select your car" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="audi-a4">Audi A4 - Black - NYC 5514</SelectItem>
-              <SelectItem value="honda-civic">Honda Civic - White - ABC 1234</SelectItem>
-              <SelectItem value="toyota-camry">Toyota Camry - Silver - XYZ 9876</SelectItem>
-            </SelectContent>
-          </Select>
+          <button
+            onClick={() => setShowCarSelector(true)}
+            className="w-full h-12 bg-card rounded-xl px-4 flex items-center justify-between hover:bg-muted/50 transition-colors"
+          >
+            <span className={selectedCar ? "text-foreground" : "text-muted-foreground"}>
+              {getCarLabel(selectedCar)}
+            </span>
+            <svg
+              className="h-4 w-4 text-muted-foreground"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
         </div>
 
         {/* Seat Offering */}
@@ -142,6 +154,16 @@ const OfferPoolDetails = () => {
           Continue
         </Button>
       </div>
+
+      {/* Modals */}
+      <CarSelectorModal
+        open={showCarSelector}
+        onClose={() => setShowCarSelector(false)}
+        onConfirm={setSelectedCar}
+        initialCar={selectedCar}
+      />
+
+      <SuccessModal open={showSuccess} onClose={handleSuccessClose} />
     </PageLayout>
   );
 };
