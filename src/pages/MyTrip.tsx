@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
 import PoolCard from "@/components/my-trip/PoolCard";
 import RequestCard from "@/components/my-trip/RequestCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const MyTrip = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("my-pool");
 
   // Mock data for My Pool
@@ -168,7 +170,7 @@ const MyTrip = () => {
                 source={pool.source}
                 destination={pool.destination}
                 buttonText="Pool info"
-                onButtonClick={() => console.log("View pool info", index)}
+                onButtonClick={() => navigate(`/find-pool/rider/${index + 1}`)}
               />
             ))}
           </TabsContent>
@@ -183,7 +185,7 @@ const MyTrip = () => {
                 source={request.source}
                 destination={request.destination}
                 requestCount={request.requestCount}
-                onRequestsClick={() => console.log("View requests", index)}
+                onRequestsClick={() => navigate("/my-trip/requests")}
               />
             ))}
           </TabsContent>

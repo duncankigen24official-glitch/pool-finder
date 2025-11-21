@@ -22,6 +22,7 @@ const RiderProfile = () => {
     reviewCount: 120,
     price: 15.00,
     joinYear: 2018,
+    phoneNumber: "+1 (555) 123-4567",
     sourceAddress: "Washinton sq.park, New Jersey 45463",
     destinationAddress: "2464 Royal Ln. Mesa, New Jersey 45463",
     startTime: "24 may, 09:00PM",
@@ -38,6 +39,10 @@ const RiderProfile = () => {
     },
     facilities: ["AC", "Luggage space", "music system"],
     instruction: "Smoking not allowed, pets are allowed",
+  };
+
+  const handleCallRider = () => {
+    window.location.href = `tel:${rider.phoneNumber}`;
   };
 
   return (
@@ -168,6 +173,15 @@ const RiderProfile = () => {
                 </div>
               </div>
             </div>
+
+            {/* Contact Info */}
+            <div>
+              <h3 className="text-primary font-semibold mb-3">Contact info</h3>
+              <div>
+                <p className="text-sm font-medium text-foreground mb-1">Phone number</p>
+                <p className="text-sm text-muted-foreground">{rider.phoneNumber}</p>
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="review" className="p-4">
@@ -223,16 +237,11 @@ const RiderProfile = () => {
         >
           <MessageCircle className="h-5 w-5" />
         </Button>
-        <Button 
-          onClick={() => setHasRequested(!hasRequested)}
-          variant={hasRequested ? "outline" : "default"}
-          className={`flex-1 h-14 rounded-xl font-semibold ${
-            hasRequested 
-              ? "border-primary text-primary hover:bg-primary/5" 
-              : "bg-primary hover:bg-primary/90 text-primary-foreground"
-          }`}
+        <Button
+          onClick={handleCallRider}
+          className="flex-1 h-14 rounded-xl font-semibold bg-primary hover:bg-primary/90 text-primary-foreground"
         >
-          {hasRequested ? "Withdraw Request" : "Request ride"}
+          Call rider
         </Button>
       </div>
     </PageLayout>

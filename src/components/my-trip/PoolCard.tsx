@@ -66,7 +66,7 @@ const PoolCard = ({
         {/* Action Button */}
         <Button
           onClick={onButtonClick}
-          className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 h-auto rounded-lg text-sm font-medium whitespace-nowrap"
+          className="bg-primary hover:bg-primary/90 text-primary-foreground px-3 py-2 h-auto rounded-lg text-xs font-medium whitespace-nowrap"
         >
           {buttonText}
         </Button>
