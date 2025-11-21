@@ -62,7 +62,7 @@ const DateTimePickerModal = ({
                 const val = parseInt(e.target.value);
                 if (val >= 1 && val <= 12) setHour(val);
               }}
-              className="w-16 text-center text-2xl font-semibold bg-muted rounded-lg py-2"
+              className="w-16 text-center text-2xl font-semibold bg-muted rounded-xl py-2"
             />
             <span className="text-2xl font-semibold">:</span>
             <input
@@ -74,7 +74,7 @@ const DateTimePickerModal = ({
                 const val = parseInt(e.target.value);
                 if (val >= 0 && val <= 59) setMinute(val);
               }}
-              className="w-16 text-center text-2xl font-semibold bg-muted rounded-lg py-2"
+              className="w-16 text-center text-2xl font-semibold bg-muted rounded-xl py-2"
             />
             <div className="flex gap-2 ml-2">
               <Button
