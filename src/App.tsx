@@ -13,6 +13,9 @@ import Chat from "./pages/find-pool/Chat";
 import OfferPool from "./pages/OfferPool";
 import OfferPoolDetails from "./pages/offer-pool/Details";
 import MyTrip from "./pages/MyTrip";
+import PoolTakerRequests from "./pages/my-trip/PoolTakerRequests";
+import ActiveTripMapView from "./pages/my-trip/ActiveTripMapView";
+import TripRoadmap from "./pages/my-trip/TripRoadmap";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
@@ -35,6 +38,9 @@ const App = () => (
           <Route path="/offer-pool" element={<OfferPool />} />
           <Route path="/offer-pool/details" element={<OfferPoolDetails />} />
           <Route path="/my-trip" element={<MyTrip />} />
+          <Route path="/my-trip/requests" element={<PoolTakerRequests />} />
+          <Route path="/my-trip/active-map-view" element={<ActiveTripMapView />} />
+          <Route path="/my-trip/roadmap" element={<TripRoadmap />} />
           <Route path="/profile" element={<Profile />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

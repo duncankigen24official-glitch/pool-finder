@@ -26,7 +26,10 @@ const RequestCard = ({
   onRequestsClick,
 }: RequestCardProps) => {
   return (
-    <div className="bg-card rounded-xl p-4 shadow-sm mb-4">
+    <div
+      onClick={onRequestsClick}
+      className="bg-card rounded-xl p-4 shadow-sm mb-4 cursor-pointer hover:shadow-md transition-shadow"
+    >
       <div className="flex items-start gap-3">
         {/* Rider Avatars */}
         <div className="grid grid-cols-2 gap-1">
@@ -55,13 +58,12 @@ const RequestCard = ({
           </div>
         </div>
 
-        {/* Requests Button */}
-        <Button
-          onClick={onRequestsClick}
-          className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 h-auto rounded-lg text-sm font-medium whitespace-nowrap"
-        >
-          Requests({requestCount})
-        </Button>
+        {/* Request Count Badge */}
+        <div className="flex items-center justify-center">
+          <div className="bg-primary text-primary-foreground px-3 py-1.5 rounded-lg text-xs font-medium">
+            {requestCount} {requestCount === 1 ? "Request" : "Requests"}
+          </div>
+        </div>
       </div>
     </div>
   );
