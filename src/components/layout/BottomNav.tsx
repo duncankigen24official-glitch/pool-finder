@@ -3,7 +3,7 @@ import { Search, Car, MapPin, User } from "lucide-react";
 
 const BottomNav = () => {
   const navItems = [
-    { to: "/", icon: Search, label: "Find Pool" },
+    { to: "/find-pool", icon: Search, label: "Find Pool" },
     { to: "/offer-pool", icon: Car, label: "Offer Pool" },
     { to: "/my-trip", icon: MapPin, label: "My Trip" },
     { to: "/profile", icon: User, label: "Profile" },
