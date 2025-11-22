@@ -17,6 +17,14 @@ import PoolTakerRequests from "./pages/my-trip/PoolTakerRequests";
 import ActiveTripMapView from "./pages/my-trip/ActiveTripMapView";
 import TripRoadmap from "./pages/my-trip/TripRoadmap";
 import Profile from "./pages/Profile";
+import EditProfile from "./pages/profile/EditProfile";
+import MyCar from "./pages/profile/MyCar";
+import AddCar from "./pages/profile/AddCar";
+import RideHistory from "./pages/profile/RideHistory";
+import Language from "./pages/profile/Language";
+import TermsCondition from "./pages/profile/TermsCondition";
+import PrivacyPolicy from "./pages/profile/PrivacyPolicy";
+import HelpSupport from "./pages/profile/HelpSupport";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,6 +50,14 @@ const App = () => (
           <Route path="/my-trip/active-map-view" element={<ActiveTripMapView />} />
           <Route path="/my-trip/roadmap" element={<TripRoadmap />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/profile/edit" element={<EditProfile />} />
+          <Route path="/profile/my-car" element={<MyCar />} />
+          <Route path="/profile/add-car" element={<AddCar />} />
+          <Route path="/profile/ride-history" element={<RideHistory />} />
+          <Route path="/profile/language" element={<Language />} />
+          <Route path="/profile/terms" element={<TermsCondition />} />
+          <Route path="/profile/privacy" element={<PrivacyPolicy />} />
+          <Route path="/profile/help" element={<HelpSupport />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
