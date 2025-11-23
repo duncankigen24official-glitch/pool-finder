@@ -34,32 +34,21 @@ const TermsCondition = () => {
           </section>
 
           <section className="space-y-2">
-            <h2 className="text-lg font-semibold text-foreground">4. Payment Terms</h2>
+            <h2 className="text-lg font-semibold text-foreground">4. Cancellation Policy</h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Payment for rides must be made through the app. The platform charges a service fee
-              for facilitating connections. Refund policies apply based on cancellation timing.
+              Users may cancel rides according to the cancellation policy. We encourage users to respect each other's time by providing reasonable notice when cancelling. Multiple late cancellations may result in account restrictions to ensure platform reliability for all users.
             </p>
           </section>
 
           <section className="space-y-2">
-            <h2 className="text-lg font-semibold text-foreground">5. Cancellation Policy</h2>
+            <h2 className="text-lg font-semibold text-foreground">5. Safety and Community Standards</h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Users may cancel rides according to the cancellation policy. Late cancellations may
-              incur fees. Multiple cancellations may result in account restrictions.
+              We prioritize safety and mutual respect. This platform helps connect travelers going the same direction. Users must not engage in harassment, discrimination, or illegal activities. Any violation may result in immediate account suspension and legal action.
             </p>
           </section>
 
           <section className="space-y-2">
-            <h2 className="text-lg font-semibold text-foreground">6. Safety and Conduct</h2>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              We prioritize safety. Users must not engage in harassment, discrimination, or
-              illegal activities. Any violation may result in immediate account suspension and
-              legal action.
-            </p>
-          </section>
-
-          <section className="space-y-2">
-            <h2 className="text-lg font-semibold text-foreground">7. Limitation of Liability</h2>
+            <h2 className="text-lg font-semibold text-foreground">6. Limitation of Liability</h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
               The platform is not responsible for any incidents that occur during rides. Users
               participate at their own risk. We recommend users verify insurance coverage.
@@ -67,7 +56,7 @@ const TermsCondition = () => {
           </section>
 
           <section className="space-y-2">
-            <h2 className="text-lg font-semibold text-foreground">8. Changes to Terms</h2>
+            <h2 className="text-lg font-semibold text-foreground">7. Changes to Terms</h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
               We reserve the right to modify these terms at any time. Continued use of the
               service after changes constitutes acceptance of the modified terms.

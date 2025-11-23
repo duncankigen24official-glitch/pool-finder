@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Car, MapPin, Shield, ChevronLeft, ChevronRight } from "lucide-react";
+import { Car, MapPin, Users, ChevronLeft, ChevronRight } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -12,22 +12,22 @@ const Onboarding = () => {
 
   const slides = [
     {
-      icon: Car,
-      title: "Share Your Ride",
-      description: "Offer rides and earn money while helping others reach their destinations.",
+      icon: Users,
+      title: "Travel, but not alone",
+      description: "Connect with like-minded travelers heading in the same direction. Share the journey, share the experience.",
       color: "text-primary",
     },
     {
-      icon: MapPin,
-      title: "Find Rides Easily",
-      description: "Search and book rides to your destination with trusted drivers in your area.",
+      icon: Car,
+      title: "Share your ride",
+      description: "Have empty seats? Offer rides to fellow travelers and help them reach their destination while enjoying great company.",
       color: "text-green-500",
     },
     {
-      icon: Shield,
-      title: "Safe & Secure",
-      description: "Verified profiles, ratings, and secure payments ensure a safe journey for everyone.",
-      color: "text-blue-500",
+      icon: MapPin,
+      title: "Find your ride",
+      description: "Looking for a ride? Find drivers going your way and travel together safely and conveniently.",
+      color: "text-amber-500",
     },
   ];
 

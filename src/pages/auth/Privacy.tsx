@@ -31,9 +31,7 @@ const Privacy = () => {
               <ul className="list-disc list-inside text-muted-foreground space-y-1 ml-4">
                 <li>Name, email address, and phone number</li>
                 <li>Profile photo and vehicle information</li>
-                <li>Government ID and driving license for verification</li>
                 <li>Location data when using the app</li>
-                <li>Payment information and transaction history</li>
                 <li>Communications and support requests</li>
               </ul>
             </div>
@@ -45,8 +43,7 @@ const Privacy = () => {
               </p>
               <ul className="list-disc list-inside text-muted-foreground space-y-1 ml-4">
                 <li>Facilitate ride connections between drivers and passengers</li>
-                <li>Process payments and maintain transaction records</li>
-                <li>Verify identity and ensure platform safety</li>
+                <li>Ensure platform safety and reliability</li>
                 <li>Provide customer support and respond to inquiries</li>
                 <li>Improve our services and user experience</li>
                 <li>Send important updates and notifications</li>
@@ -63,7 +60,7 @@ const Privacy = () => {
                 <li>Profile information (name, photo, rating) with ride participants</li>
                 <li>Location data during active rides</li>
                 <li>Vehicle information with passengers</li>
-                <li>Data with service providers (payment processors, SMS services)</li>
+                <li>Data with essential service providers (SMS services, hosting)</li>
                 <li>Information required by law enforcement or legal processes</li>
               </ul>
               <p className="text-muted-foreground leading-relaxed mt-2">
@@ -79,7 +76,7 @@ const Privacy = () => {
               <ul className="list-disc list-inside text-muted-foreground space-y-1 ml-4">
                 <li>Match riders with nearby drivers</li>
                 <li>Provide navigation and route optimization</li>
-                <li>Calculate accurate fares and distances</li>
+                <li>Calculate distances and travel times</li>
                 <li>Improve service quality and safety</li>
               </ul>
               <p className="text-muted-foreground leading-relaxed mt-2">
