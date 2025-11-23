@@ -9,27 +9,21 @@ const PrivacyPolicy = () => {
           <section className="space-y-2">
             <h2 className="text-lg font-semibold text-foreground">1. Information We Collect</h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              We collect information you provide directly, including name, email, phone number,
-              payment information, and location data necessary for providing carpooling services.
-              We also collect usage data to improve our services.
+              We collect information you provide directly, including name, email, phone number, profile photo, vehicle information, and location data necessary for connecting travelers. We also collect usage data to improve our services.
             </p>
           </section>
 
           <section className="space-y-2">
             <h2 className="text-lg font-semibold text-foreground">2. How We Use Your Information</h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Your information is used to facilitate ride connections, process payments, verify
-              identity, improve our services, and communicate important updates. We use location
-              data only when you're using the app.
+              Your information is used to facilitate ride connections, ensure platform safety, improve our services, and communicate important updates. We use location data only when you're using the app.
             </p>
           </section>
 
           <section className="space-y-2">
             <h2 className="text-lg font-semibold text-foreground">3. Information Sharing</h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              We share limited information with other users to facilitate rides (name, photo,
-              rating). We don't sell your personal information. We may share data with service
-              providers and comply with legal requirements.
+              We share limited information with other users to facilitate rides (name, photo, rating). We don't sell your personal information. We may share data with essential service providers (hosting, SMS) and comply with legal requirements.
             </p>
           </section>
 

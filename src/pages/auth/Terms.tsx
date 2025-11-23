@@ -65,49 +65,42 @@ const Terms = () => {
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-xl font-semibold text-foreground">5. Payment and Fees</h2>
+              <h2 className="text-xl font-semibold text-foreground">5. Cancellation Policy</h2>
               <p className="text-muted-foreground leading-relaxed">
-                All payments must be made through the app. RideShare charges a service fee for facilitating connections between users. Prices may vary based on distance, demand, and other factors. Refund policies apply based on cancellation timing.
+                Users may cancel rides according to the cancellation policy. We encourage users to respect each other's time by providing reasonable notice when cancelling. Multiple late cancellations may result in account restrictions to ensure platform reliability for all users.
               </p>
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-xl font-semibold text-foreground">6. Cancellation Policy</h2>
+              <h2 className="text-xl font-semibold text-foreground">6. Safety and Community Standards</h2>
               <p className="text-muted-foreground leading-relaxed">
-                Users may cancel rides according to the cancellation policy. Cancellations made less than 2 hours before the scheduled ride time may incur fees. Multiple cancellations may result in account restrictions.
+                We prioritize safety and mutual respect. RideShare is a connection platform that helps travelers find each other. Users must not engage in harassment, discrimination, or illegal activities. Any violation may result in immediate account suspension and legal action.
               </p>
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-xl font-semibold text-foreground">7. Safety and Verification</h2>
-              <p className="text-muted-foreground leading-relaxed">
-                We prioritize safety and require verification of government IDs and driving licenses. Users must not engage in harassment, discrimination, or illegal activities. Any violation may result in immediate account suspension and legal action.
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <h2 className="text-xl font-semibold text-foreground">8. Limitation of Liability</h2>
+              <h2 className="text-xl font-semibold text-foreground">7. Limitation of Liability</h2>
               <p className="text-muted-foreground leading-relaxed">
                 RideShare is a platform service and is not responsible for any incidents, damages, or losses that occur during rides. Users participate at their own risk. We strongly recommend verifying insurance coverage and following all safety guidelines.
               </p>
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-xl font-semibold text-foreground">9. Intellectual Property</h2>
+              <h2 className="text-xl font-semibold text-foreground">8. Intellectual Property</h2>
               <p className="text-muted-foreground leading-relaxed">
                 All content, trademarks, and intellectual property on RideShare are owned by or licensed to us. You may not use, copy, or distribute any content without our explicit permission.
               </p>
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-xl font-semibold text-foreground">10. Changes to Terms</h2>
+              <h2 className="text-xl font-semibold text-foreground">9. Changes to Terms</h2>
               <p className="text-muted-foreground leading-relaxed">
                 We reserve the right to modify these terms at any time. Continued use of the service after changes constitutes acceptance of the modified terms. We will notify users of significant changes through the app or email.
               </p>
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-xl font-semibold text-foreground">11. Contact Us</h2>
+              <h2 className="text-xl font-semibold text-foreground">10. Contact Us</h2>
               <p className="text-muted-foreground leading-relaxed">
                 If you have questions about these terms, please contact our support team through the Help & Support section in the app.
               </p>
