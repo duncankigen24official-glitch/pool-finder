@@ -8,13 +8,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Car, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
+import { currencies, getCurrenciesByRegion } from "@/data/currencies";
 
 const signupSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters").max(100, "Name is too long"),
   email: z.string().email("Invalid email address").max(255, "Email is too long"),
   phoneNumber: z.string().min(10, "Phone number must be at least 10 digits").max(20, "Phone number is too long"),
+  preferredCurrency: z.string().min(3, "Please select a currency"),
   password: z.string()
     .min(8, "Password must be at least 8 characters")
     .max(72, "Password is too long")
@@ -48,10 +51,13 @@ const Signup = () => {
     resolver: zodResolver(signupSchema),
     defaultValues: {
       acceptTerms: false,
+      preferredCurrency: "USD",
     },
   });
 
   const acceptTerms = watch("acceptTerms");
+  const preferredCurrency = watch("preferredCurrency");
+  const currenciesByRegion = getCurrenciesByRegion();
 
   const onSubmit = async (data: SignupFormData) => {
     setIsLoading(true);
@@ -66,6 +72,7 @@ const Signup = () => {
           data: {
             full_name: data.fullName,
             phone_number: data.phoneNumber,
+            preferred_currency: data.preferredCurrency,
           },
         },
       });
@@ -145,6 +152,33 @@ const Signup = () => {
               />
               {errors.phoneNumber && (
                 <p className="text-sm text-destructive">{errors.phoneNumber.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="preferredCurrency">Preferred Currency</Label>
+              <Select
+                value={preferredCurrency}
+                onValueChange={(value) => setValue("preferredCurrency", value)}
+              >
+                <SelectTrigger className={errors.preferredCurrency ? "border-destructive" : ""}>
+                  <SelectValue placeholder="Select your currency" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(currenciesByRegion).map(([region, currencies]) => (
+                    <SelectGroup key={region}>
+                      <SelectLabel>{region}</SelectLabel>
+                      {currencies.map((currency) => (
+                        <SelectItem key={currency.code} value={currency.code}>
+                          {currency.symbol} - {currency.name} ({currency.code})
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.preferredCurrency && (
+                <p className="text-sm text-destructive">{errors.preferredCurrency.message}</p>
               )}
             </div>
 

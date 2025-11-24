@@ -5,10 +5,12 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Camera } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { getCurrenciesByRegion } from "@/data/currencies";
 
 const EditProfile = () => {
   const navigate = useNavigate();
@@ -20,9 +22,11 @@ const EditProfile = () => {
     phone_number: "",
     email: "",
     avatar_url: "",
+    preferred_currency: "USD",
   });
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
+  const currenciesByRegion = getCurrenciesByRegion();
 
   useEffect(() => {
     if (user) {
@@ -34,7 +38,7 @@ const EditProfile = () => {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('full_name, phone_number, email, avatar_url')
+        .select('full_name, phone_number, email, avatar_url, preferred_currency')
         .eq('id', user?.id)
         .single();
 
@@ -45,6 +49,7 @@ const EditProfile = () => {
         phone_number: data.phone_number || "",
         email: data.email || "",
         avatar_url: data.avatar_url || "",
+        preferred_currency: data.preferred_currency || "USD",
       });
       setPreviewUrl(data.avatar_url || "");
     } catch (error) {
@@ -110,6 +115,7 @@ const EditProfile = () => {
           phone_number: formData.phone_number,
           email: formData.email,
           avatar_url: avatar_url,
+          preferred_currency: formData.preferred_currency,
         })
         .eq('id', user.id);
 
@@ -203,6 +209,30 @@ const EditProfile = () => {
               className="rounded-lg"
               placeholder="Enter your email"
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="currency">Preferred Currency</Label>
+            <Select
+              value={formData.preferred_currency}
+              onValueChange={(value) => setFormData({ ...formData, preferred_currency: value })}
+            >
+              <SelectTrigger className="rounded-lg">
+                <SelectValue placeholder="Select your currency" />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(currenciesByRegion).map(([region, currencies]) => (
+                  <SelectGroup key={region}>
+                    <SelectLabel>{region}</SelectLabel>
+                    {currencies.map((currency) => (
+                      <SelectItem key={currency.code} value={currency.code}>
+                        {currency.symbol} - {currency.name} ({currency.code})
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 

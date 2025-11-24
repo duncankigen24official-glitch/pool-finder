@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
@@ -6,20 +6,49 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import CarSelectorModal from "@/components/offer-pool/CarSelectorModal";
 import SuccessModal from "@/components/offer-pool/SuccessModal";
-import { Minus, Plus } from "lucide-react";
+import { PriceInput } from "@/components/forms/PriceInput";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const OfferPoolDetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { source, destination } = location.state || {};
+  const { user } = useAuth();
 
   const [price, setPrice] = useState(10);
+  const [currency, setCurrency] = useState("USD");
   const [selectedCar, setSelectedCar] = useState("");
   const [availableSeats, setAvailableSeats] = useState("");
   const [facilities, setFacilities] = useState("");
   const [instructions, setInstructions] = useState("");
   const [showCarSelector, setShowCarSelector] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (user) {
+      fetchUserCurrency();
+    }
+  }, [user]);
+
+  const fetchUserCurrency = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('preferred_currency')
+        .eq('id', user?.id)
+        .single();
+
+      if (error) throw error;
+      setCurrency(data?.preferred_currency || "USD");
+    } catch (error) {
+      console.error('Error fetching currency:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getCarLabel = (carId: string) => {
     const carMap: { [key: string]: string } = {
@@ -34,6 +63,18 @@ const OfferPoolDetails = () => {
   };
 
   const handleContinue = () => {
+    if (!selectedCar) {
+      toast.error("Please select a vehicle");
+      return;
+    }
+    if (!availableSeats || parseInt(availableSeats) < 1) {
+      toast.error("Please enter available seats");
+      return;
+    }
+    if (price <= 0) {
+      toast.error("Please set a valid price");
+      return;
+    }
     setShowSuccess(true);
   };
 
@@ -44,46 +85,38 @@ const OfferPoolDetails = () => {
 
   return (
     <PageLayout title="Offer pool" hideBottomNav showBackButton>
-      <div className="p-4 space-y-6">
-        {/* Set Price */}
-        <div>
-          <h3 className="text-lg font-semibold text-foreground mb-3">Set Price</h3>
-          <div className="bg-card rounded-xl p-4 shadow-sm">
-            <div className="flex items-start gap-3 mb-3">
-              <div className="flex-1">
-                <div className="flex items-start gap-2 mb-2">
-                  <div className="h-3 w-3 rounded-full bg-success mt-1.5" />
-                  <p className="text-sm text-foreground">{source || "6391 Elgin St. Celina,"}</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <div className="h-3 w-3 rounded-full bg-primary mt-1.5" />
-                  <p className="text-sm text-foreground">{destination || "2464 Royal Ln. Mesa,"}</p>
+      {loading ? (
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+      ) : (
+        <div className="p-4 space-y-6">
+          {/* Set Price */}
+          <div>
+            <h3 className="text-lg font-semibold text-foreground mb-3">Set Price</h3>
+            <div className="bg-card rounded-xl p-4 shadow-sm">
+              <div className="flex items-start gap-3 mb-4">
+                <div className="flex-1">
+                  <div className="flex items-start gap-2 mb-2">
+                    <div className="h-3 w-3 rounded-full bg-success mt-1.5" />
+                    <p className="text-sm text-foreground">{source || "6391 Elgin St. Celina,"}</p>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <div className="h-3 w-3 rounded-full bg-primary mt-1.5" />
+                    <p className="text-sm text-foreground">{destination || "2464 Royal Ln. Mesa,"}</p>
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center gap-2 bg-muted rounded-lg px-3 py-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => setPrice(Math.max(1, price - 1))}
-                >
-                  <Minus className="h-4 w-4" />
-                </Button>
-                <span className="text-primary font-bold text-lg min-w-[60px] text-center">
-                  ${price}
-                </span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => setPrice(price + 1)}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
+              <PriceInput
+                value={price}
+                onChange={setPrice}
+                currency={currency}
+                label=""
+                placeholder="Enter price"
+                required
+              />
             </div>
           </div>
-        </div>
 
         {/* Your Car */}
         <div>
@@ -154,6 +187,7 @@ const OfferPoolDetails = () => {
           Continue
         </Button>
       </div>
+      )}
 
       {/* Modals */}
       <CarSelectorModal
