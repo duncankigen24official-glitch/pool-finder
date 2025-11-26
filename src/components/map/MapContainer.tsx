@@ -17,6 +17,7 @@ interface MapContainerProps {
   zoom?: number;
   showUserLocation?: boolean;
   onLocationChange?: (location: { latitude: number; longitude: number }) => void;
+  onMapClick?: (event: any) => void;
   className?: string;
 }
 
@@ -26,6 +27,7 @@ export const MapContainer = ({
   zoom = 12,
   showUserLocation = false,
   onLocationChange,
+  onMapClick,
   className = "w-full h-full"
 }: MapContainerProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -53,11 +55,16 @@ export const MapContainer = ({
       showUserHeading: true
     }), 'top-right');
 
+    // Add click handler if provided
+    if (onMapClick) {
+      map.current.on('click', onMapClick);
+    }
+
     return () => {
       map.current?.remove();
       map.current = null;
     };
-  }, []);
+  }, [onMapClick]);
 
   // Update center
   useEffect(() => {
