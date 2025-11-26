@@ -50,16 +50,17 @@ const OfferPoolDetails = () => {
     }
   };
 
-  const getCarLabel = (carId: string) => {
-    const carMap: { [key: string]: string } = {
-      "audi-a4": "Audi A4 seat",
-      "toyota-matrix": "Toyota matrix seat",
-      "bmw": "Bmw seat",
-      "mercedes": "Mercedes Benz seat",
-      "maruti": "Maruti Suzuki seat",
-      "ford": "Ford seat",
-    };
-    return carMap[carId] || "Select your car";
+  const handleCarSelect = (carId: string, vehicle?: any) => {
+    setSelectedCar(carId);
+    if (vehicle) {
+      // Populate facilities and instructions from the selected car
+      if (vehicle.facilities && vehicle.facilities.length > 0) {
+        setFacilities(vehicle.facilities.join(', '));
+      }
+      if (vehicle.instructions) {
+        setInstructions(vehicle.instructions);
+      }
+    }
   };
 
   const handleContinue = () => {
@@ -126,7 +127,7 @@ const OfferPoolDetails = () => {
             className="w-full h-12 bg-card rounded-xl px-4 flex items-center justify-between hover:bg-muted/50 transition-colors"
           >
             <span className={selectedCar ? "text-foreground" : "text-muted-foreground"}>
-              {getCarLabel(selectedCar)}
+              {selectedCar ? "Car selected" : "Select your car"}
             </span>
             <svg
               className="h-4 w-4 text-muted-foreground"
@@ -193,7 +194,7 @@ const OfferPoolDetails = () => {
       <CarSelectorModal
         open={showCarSelector}
         onClose={() => setShowCarSelector(false)}
-        onConfirm={setSelectedCar}
+        onConfirm={handleCarSelect}
         initialCar={selectedCar}
       />
 

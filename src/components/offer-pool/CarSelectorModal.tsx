@@ -13,12 +13,14 @@ interface Vehicle {
   vehicle_name: string;
   vehicle_type: string;
   seat_capacity: number;
+  facilities: string[];
+  instructions: string;
 }
 
 interface CarSelectorModalProps {
   open: boolean;
   onClose: () => void;
-  onConfirm: (vehicleId: string) => void;
+  onConfirm: (vehicleId: string, vehicle?: Vehicle) => void;
   initialCar?: string;
 }
 
@@ -44,7 +46,7 @@ const CarSelectorModal = ({
     try {
       const { data, error } = await supabase
         .from('vehicles')
-        .select('id, vehicle_name, vehicle_type, seat_capacity')
+        .select('id, vehicle_name, vehicle_type, seat_capacity, facilities, instructions')
         .eq('user_id', user?.id)
         .order('created_at', { ascending: false });
 
@@ -63,7 +65,8 @@ const CarSelectorModal = ({
       toast.error("Please select a vehicle");
       return;
     }
-    onConfirm(selectedCar);
+    const vehicle = vehicles.find(v => v.id === selectedCar);
+    onConfirm(selectedCar, vehicle);
     onClose();
   };
 
