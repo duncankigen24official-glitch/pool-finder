@@ -1,36 +1,124 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { MapPin, Search } from "lucide-react";
+import { MapPin, Search, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MapContainer } from "@/components/map/MapContainer";
+import mapboxgl from 'mapbox-gl';
+
+const MAPBOX_TOKEN = 'pk.eyJ1IjoiZHVuY2Fua2lnZW4yNCIsImEiOiJjbWljb2FsOG4xZnh1MmlzYTltNnIwY2tuIn0.G2yMP2YUVYSAwhDSTwhoFg';
+
+interface SearchResult {
+  id: string;
+  place_name: string;
+  center: [number, number];
+}
 
 const LocationPicker = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { type, returnPath } = location.state || { type: "source", returnPath: "/find-pool" };
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [showResults, setShowResults] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState({
     latitude: 51.5074,
     longitude: -0.1278,
   });
-  const [selectedAddress, setSelectedAddress] = useState("London, United Kingdom");
+  const [selectedAddress, setSelectedAddress] = useState("Loading location...");
   const [marker, setMarker] = useState({
     latitude: 51.5074,
     longitude: -0.1278,
   });
+  const [isLoadingAddress, setIsLoadingAddress] = useState(false);
+
+  // Reverse geocode to get address from coordinates
+  const reverseGeocode = useCallback(async (lat: number, lng: number) => {
+    setIsLoadingAddress(true);
+    try {
+      const response = await fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${MAPBOX_TOKEN}`
+      );
+      const data = await response.json();
+      
+      if (data.features && data.features.length > 0) {
+        setSelectedAddress(data.features[0].place_name);
+      } else {
+        setSelectedAddress(`${lat.toFixed(4)}, ${lng.toFixed(4)}`);
+      }
+    } catch (error) {
+      console.error('Reverse geocoding error:', error);
+      setSelectedAddress(`${lat.toFixed(4)}, ${lng.toFixed(4)}`);
+    } finally {
+      setIsLoadingAddress(false);
+    }
+  }, []);
+
+  // Initial reverse geocode
+  useEffect(() => {
+    reverseGeocode(selectedLocation.latitude, selectedLocation.longitude);
+  }, []);
+
+  // Search for places
+  useEffect(() => {
+    const searchPlaces = async () => {
+      if (!searchQuery || searchQuery.length < 3) {
+        setSearchResults([]);
+        setShowResults(false);
+        return;
+      }
+
+      setIsSearching(true);
+      try {
+        const response = await fetch(
+          `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(searchQuery)}.json?access_token=${MAPBOX_TOKEN}&limit=5`
+        );
+        const data = await response.json();
+        
+        if (data.features) {
+          setSearchResults(data.features);
+          setShowResults(true);
+        }
+      } catch (error) {
+        console.error('Search error:', error);
+      } finally {
+        setIsSearching(false);
+      }
+    };
+
+    const debounceTimer = setTimeout(searchPlaces, 300);
+    return () => clearTimeout(debounceTimer);
+  }, [searchQuery]);
+
+  const handleSearchResultSelect = (result: SearchResult) => {
+    const [lng, lat] = result.center;
+    setSelectedLocation({ latitude: lat, longitude: lng });
+    setMarker({ latitude: lat, longitude: lng });
+    setSelectedAddress(result.place_name);
+    setSearchQuery(result.place_name);
+    setShowResults(false);
+  };
 
   const handleLocationChange = useCallback((newLocation: { latitude: number; longitude: number }) => {
     setSelectedLocation(newLocation);
     setMarker(newLocation);
-    // In a real app, this would reverse geocode to get the address
-    setSelectedAddress(`${newLocation.latitude.toFixed(4)}, ${newLocation.longitude.toFixed(4)}`);
-  }, []);
+    reverseGeocode(newLocation.latitude, newLocation.longitude);
+  }, [reverseGeocode]);
+
+  const handleMapClick = useCallback((event: mapboxgl.MapMouseEvent) => {
+    const { lng, lat } = event.lngLat;
+    setSelectedLocation({ latitude: lat, longitude: lng });
+    setMarker({ latitude: lat, longitude: lng });
+    reverseGeocode(lat, lng);
+  }, [reverseGeocode]);
 
   const handleConfirm = () => {
     // Navigate back with the selected location
+    const currentState = location.state || {};
     navigate(returnPath, {
       state: {
+        ...currentState,
         [type]: {
           address: selectedAddress,
           latitude: selectedLocation.latitude,
@@ -52,8 +140,28 @@ const LocationPicker = () => {
             placeholder="Search location"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 bg-card h-12 rounded-xl shadow-lg"
+            onFocus={() => searchResults.length > 0 && setShowResults(true)}
+            className="pl-10 pr-10 bg-card h-12 rounded-xl shadow-lg"
           />
+          {isSearching && (
+            <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground animate-spin" />
+          )}
+          
+          {/* Search Results Dropdown */}
+          {showResults && searchResults.length > 0 && (
+            <div className="absolute top-full mt-2 left-0 right-0 bg-card rounded-xl shadow-2xl overflow-hidden max-h-80 overflow-y-auto">
+              {searchResults.map((result) => (
+                <button
+                  key={result.id}
+                  onClick={() => handleSearchResultSelect(result)}
+                  className="w-full px-4 py-3 text-left hover:bg-muted/50 transition-colors border-b border-border last:border-b-0 flex items-start gap-3"
+                >
+                  <MapPin className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-foreground">{result.place_name}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -76,7 +184,7 @@ const LocationPicker = () => {
 
       {/* Center Pin Overlay */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-full pointer-events-none z-10">
-        <MapPin className="h-10 w-10 text-primary drop-shadow-lg" />
+        <MapPin className="h-10 w-10 text-primary drop-shadow-lg animate-bounce" />
       </div>
 
       {/* Location Card */}
@@ -86,14 +194,24 @@ const LocationPicker = () => {
             <MapPin className="h-5 w-5 text-primary" />
           </div>
           <div className="flex-1">
-            <p className="text-foreground font-medium">{selectedAddress}</p>
-            <p className="text-sm text-muted-foreground mt-1">
-              {type === "source" ? "Pickup location" : "Drop-off location"}
-            </p>
+            {isLoadingAddress ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">Loading address...</span>
+              </div>
+            ) : (
+              <>
+                <p className="text-foreground font-medium">{selectedAddress}</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {type === "source" ? "Pickup location" : "Drop-off location"}
+                </p>
+              </>
+            )}
           </div>
         </div>
         <Button
           onClick={handleConfirm}
+          disabled={isLoadingAddress}
           className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-semibold"
         >
           Confirm location
