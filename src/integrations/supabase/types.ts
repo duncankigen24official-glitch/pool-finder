@@ -56,6 +56,7 @@ export type Database = {
           facilities: string[] | null
           id: string
           image_url: string | null
+          instructions: string | null
           registration_number: string
           seat_capacity: number
           updated_at: string | null
@@ -68,6 +69,7 @@ export type Database = {
           facilities?: string[] | null
           id?: string
           image_url?: string | null
+          instructions?: string | null
           registration_number: string
           seat_capacity: number
           updated_at?: string | null
@@ -80,6 +82,7 @@ export type Database = {
           facilities?: string[] | null
           id?: string
           image_url?: string | null
+          instructions?: string | null
           registration_number?: string
           seat_capacity?: number
           updated_at?: string | null

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
 import LocationInput from "@/components/find-pool/LocationInput";
 import DateTimePickerModal from "@/components/find-pool/DateTimePickerModal";
@@ -11,12 +11,23 @@ import offerPoolHero from "@/assets/offer-pool-hero.png";
 
 const OfferPool = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [sourceAddress, setSourceAddress] = useState("Source location");
   const [destinationAddress, setDestinationAddress] = useState("Destination location");
   const [selectedDateTime, setSelectedDateTime] = useState<Date | null>(null);
   const [showDateTimePicker, setShowDateTimePicker] = useState(false);
   const [recurringRide, setRecurringRide] = useState(false);
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
+
+  // Handle location updates from LocationPicker
+  useEffect(() => {
+    if (location.state?.source) {
+      setSourceAddress(location.state.source.address);
+    }
+    if (location.state?.destination) {
+      setDestinationAddress(location.state.destination.address);
+    }
+  }, [location.state]);
 
   const days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
 
@@ -62,13 +73,13 @@ const OfferPool = () => {
           <LocationInput
             type="source"
             address={sourceAddress}
-            onClick={() => navigate("/find-pool/location-picker", { state: { type: "source" } })}
+            onClick={() => navigate("/find-pool/location-picker", { state: { type: "source", returnPath: "/offer-pool" } })}
           />
           <div className="h-px bg-border my-2" />
           <LocationInput
             type="destination"
             address={destinationAddress}
-            onClick={() => navigate("/find-pool/location-picker", { state: { type: "destination" } })}
+            onClick={() => navigate("/find-pool/location-picker", { state: { type: "destination", returnPath: "/offer-pool" } })}
           />
         </div>
 

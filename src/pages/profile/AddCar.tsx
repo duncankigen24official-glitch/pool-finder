@@ -4,6 +4,7 @@ import PageLayout from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Camera } from "lucide-react";
 import { toast } from "sonner";
@@ -22,6 +23,7 @@ const AddCar = () => {
     regNumber: "",
     seatOffering: "",
     facilities: "",
+    instructions: "",
   });
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,7 +68,7 @@ const AddCar = () => {
       return;
     }
 
-    if (!formData.vehicleType || !formData.vehicleName || !formData.regNumber || !formData.seatOffering) {
+    if (!formData.vehicleType || !formData.vehicleName || !formData.regNumber || !formData.seatOffering || !formData.instructions) {
       toast.error("Please fill all required fields");
       return;
     }
@@ -93,6 +95,7 @@ const AddCar = () => {
           registration_number: formData.regNumber,
           seat_capacity: parseInt(formData.seatOffering),
           facilities: facilitiesArray,
+          instructions: formData.instructions,
           image_url: imageUrl,
         });
 
@@ -192,10 +195,21 @@ const AddCar = () => {
             <Label htmlFor="facilities">Facilities(i.e AC,Extra luggage etc.)</Label>
             <Input
               id="facilities"
-              placeholder="Enter facilities"
+              placeholder="Enter facilities (comma separated)"
               value={formData.facilities}
               onChange={(e) => setFormData({ ...formData, facilities: e.target.value })}
               className="rounded-lg"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="instructions">Instructions(i.e no smoking, pet, etc.)</Label>
+            <Textarea
+              id="instructions"
+              placeholder="Enter instructions"
+              value={formData.instructions}
+              onChange={(e) => setFormData({ ...formData, instructions: e.target.value })}
+              className="rounded-lg min-h-[100px] resize-none"
             />
           </div>
         </div>
