@@ -84,13 +84,21 @@ const OfferPool = () => {
             <LocationInput
               type="source"
               address={sourceAddress || "Select pickup location"}
-              onClick={() => navigate("/find-pool/location-picker?mode=source")}
+              onClick={() => {
+                const params = new URLSearchParams(searchParams);
+                params.set("mode", "source");
+                navigate(`/find-pool/location-picker?${params.toString()}`);
+              }}
             />
             <div className="h-px bg-border my-2" />
             <LocationInput
               type="destination"
               address={destinationAddress || "Select destination"}
-              onClick={() => navigate("/find-pool/location-picker?mode=destination")}
+              onClick={() => {
+                const params = new URLSearchParams(searchParams);
+                params.set("mode", "destination");
+                navigate(`/find-pool/location-picker?${params.toString()}`);
+              }}
             />
         </div>
 
