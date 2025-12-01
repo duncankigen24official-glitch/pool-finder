@@ -46,6 +46,9 @@ export const MapContainer = ({
       zoom: zoom
     });
 
+    // Set cursor to pointer for clickable map
+    map.current.getCanvas().style.cursor = 'pointer';
+
     map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
     map.current.addControl(new mapboxgl.GeolocateControl({
       positionOptions: {

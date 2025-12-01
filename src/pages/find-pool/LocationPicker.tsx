@@ -119,8 +119,9 @@ const LocationPicker = () => {
       ? "/offer-pool" 
       : "/find-pool";
     
-    // Navigate back with location data in URL params
-    const params = new URLSearchParams(window.location.search);
+    // Preserve ALL existing params and update the selected location
+    const params = new URLSearchParams(searchParams);
+    params.delete("mode"); // Remove mode param as it's only for LocationPicker
     params.set(mode, `${selectedLocation.latitude},${selectedLocation.longitude}`);
     params.set(`${mode}Address`, selectedAddress);
     
