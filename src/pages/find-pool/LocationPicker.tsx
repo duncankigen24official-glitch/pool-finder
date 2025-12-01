@@ -175,14 +175,9 @@ const LocationPicker = () => {
             },
           ]}
           zoom={13}
-          onLocationChange={handleLocationChange}
+          onMapClick={handleMapClick}
           className="w-full h-full"
         />
-      </div>
-
-      {/* Center Pin Overlay */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-full pointer-events-none z-10">
-        <MapPin className="h-10 w-10 text-primary drop-shadow-lg animate-bounce" />
       </div>
 
       {/* Location Card */}
