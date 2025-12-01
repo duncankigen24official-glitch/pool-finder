@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
 import LocationInput from "@/components/find-pool/LocationInput";
 import DateTimePickerModal from "@/components/find-pool/DateTimePickerModal";
@@ -7,27 +7,38 @@ import SeatSelectorModal from "@/components/find-pool/SeatSelectorModal";
 import { Button } from "@/components/ui/button";
 import { Calendar, User } from "lucide-react";
 import { format } from "date-fns";
-import { MapContainer } from "@/components/map/MapContainer";
+import heroImage from "@/assets/hero-image.jpg";
 
 const FindPool = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const [sourceAddress, setSourceAddress] = useState("9, England RM10 8QB, United Kingdom");
-  const [destinationAddress, setDestinationAddress] = useState("9, England RM10 8QB, United Kingdom");
+  const [searchParams] = useSearchParams();
+  const [sourceAddress, setSourceAddress] = useState("");
+  const [destinationAddress, setDestinationAddress] = useState("");
+  const [sourceCoords, setSourceCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [destinationCoords, setDestinationCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [selectedDateTime, setSelectedDateTime] = useState<Date | null>(null);
   const [selectedSeats, setSelectedSeats] = useState<number | null>(null);
   const [showDateTimePicker, setShowDateTimePicker] = useState(false);
   const [showSeatSelector, setShowSeatSelector] = useState(false);
 
-  // Handle location updates from LocationPicker
+  // Handle location updates from URL params
   useEffect(() => {
-    if (location.state?.source) {
-      setSourceAddress(location.state.source.address);
+    const source = searchParams.get("source");
+    const destination = searchParams.get("destination");
+    const sourceAddr = searchParams.get("sourceAddress");
+    const destAddr = searchParams.get("destinationAddress");
+
+    if (source) {
+      const [lat, lng] = source.split(",").map(Number);
+      setSourceCoords({ lat, lng });
+      if (sourceAddr) setSourceAddress(sourceAddr);
     }
-    if (location.state?.destination) {
-      setDestinationAddress(location.state.destination.address);
+    if (destination) {
+      const [lat, lng] = destination.split(",").map(Number);
+      setDestinationCoords({ lat, lng });
+      if (destAddr) setDestinationAddress(destAddr);
     }
-  }, [location.state]);
+  }, [searchParams]);
 
   const handleFindPool = () => {
     // Navigate to results page
@@ -44,17 +55,18 @@ const FindPool = () => {
   return (
     <PageLayout showNotification>
       <div className="relative h-screen flex flex-col">
-        {/* Map Background */}
+        {/* Hero Image Background */}
         <div className="absolute inset-0">
-          <MapContainer
-            center={{ latitude: 51.5074, longitude: -0.1278 }}
-            zoom={11}
-            className="w-full h-full"
+          <img 
+            src={heroImage} 
+            alt="Find Pool Hero" 
+            className="w-full h-full object-cover"
           />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/40 to-background" />
         </div>
 
         {/* Header */}
-        <div className="relative z-10 p-4 bg-gradient-to-b from-background/90 to-transparent">
+        <div className="relative z-10 p-4">
           <h1 className="text-xl font-bold text-primary uppercase tracking-wide">
             FIND POOL
           </h1>
@@ -74,14 +86,14 @@ const FindPool = () => {
             <div className="bg-card rounded-xl p-4 mb-4 shadow-sm space-y-3">
             <LocationInput
               type="source"
-              address={sourceAddress}
-              onClick={() => navigate("/find-pool/location-picker", { state: { type: "source", returnPath: "/find-pool" } })}
+              address={sourceAddress || "Select pickup location"}
+              onClick={() => navigate("/find-pool/location-picker?mode=source")}
             />
             <div className="h-px bg-border my-2" />
             <LocationInput
               type="destination"
-              address={destinationAddress}
-              onClick={() => navigate("/find-pool/location-picker", { state: { type: "destination", returnPath: "/find-pool" } })}
+              address={destinationAddress || "Select destination"}
+              onClick={() => navigate("/find-pool/location-picker?mode=destination")}
             />
             </div>
 
