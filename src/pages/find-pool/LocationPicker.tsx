@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { MapPin, Search, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,8 +16,8 @@ interface SearchResult {
 
 const LocationPicker = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { type, returnPath } = location.state || { type: "source", returnPath: "/find-pool" };
+  const [searchParams] = useSearchParams();
+  const mode = searchParams.get("mode") || "source";
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [showResults, setShowResults] = useState(false);
@@ -114,19 +114,17 @@ const LocationPicker = () => {
   }, [reverseGeocode]);
 
   const handleConfirm = () => {
-    // Navigate back with the selected location
-    const currentState = location.state || {};
-    navigate(returnPath, {
-      state: {
-        ...currentState,
-        [type]: {
-          address: selectedAddress,
-          latitude: selectedLocation.latitude,
-          longitude: selectedLocation.longitude,
-        },
-      },
-      replace: true,
-    });
+    // Determine return path based on current URL
+    const returnPath = window.location.pathname.includes("offer-pool") 
+      ? "/offer-pool" 
+      : "/find-pool";
+    
+    // Navigate back with location data in URL params
+    const params = new URLSearchParams(window.location.search);
+    params.set(mode, `${selectedLocation.latitude},${selectedLocation.longitude}`);
+    params.set(`${mode}Address`, selectedAddress);
+    
+    navigate(`${returnPath}?${params.toString()}`, { replace: true });
   };
 
   return (
@@ -173,7 +171,7 @@ const LocationPicker = () => {
             {
               latitude: marker.latitude,
               longitude: marker.longitude,
-              color: type === "source" ? "#10b981" : "#6366f1",
+              color: mode === "source" ? "#10b981" : "#6366f1",
             },
           ]}
           zoom={13}
@@ -203,7 +201,7 @@ const LocationPicker = () => {
               <>
                 <p className="text-foreground font-medium">{selectedAddress}</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {type === "source" ? "Pickup location" : "Drop-off location"}
+                  {mode === "source" ? "Pickup location" : "Drop-off location"}
                 </p>
               </>
             )}
