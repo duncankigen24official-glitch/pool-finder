@@ -1,9 +1,10 @@
 import { useState, useCallback, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { MapPin, Search, Loader2 } from "lucide-react";
+import { MapPin, Search, Loader2, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MapContainer } from "@/components/map/MapContainer";
+import { useGeolocation } from "@/hooks/useGeolocation";
 import mapboxgl from 'mapbox-gl';
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiZHVuY2Fua2lnZW4yNCIsImEiOiJjbWljb2FsOG4xZnh1MmlzYTltNnIwY2tuIn0.G2yMP2YUVYSAwhDSTwhoFg';
@@ -18,20 +19,35 @@ const LocationPicker = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const mode = searchParams.get("mode") || "source";
+  const { position, loading: geoLoading } = useGeolocation();
+  
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [showResults, setShowResults] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState({
-    latitude: 51.5074,
-    longitude: -0.1278,
-  });
+  const [selectedLocation, setSelectedLocation] = useState<{latitude: number; longitude: number} | null>(null);
   const [selectedAddress, setSelectedAddress] = useState("Loading location...");
-  const [marker, setMarker] = useState({
-    latitude: 51.5074,
-    longitude: -0.1278,
-  });
+  const [marker, setMarker] = useState<{latitude: number; longitude: number} | null>(null);
   const [isLoadingAddress, setIsLoadingAddress] = useState(false);
+  const [initialLocationSet, setInitialLocationSet] = useState(false);
+
+  // Set initial location from GPS
+  useEffect(() => {
+    if (position && !initialLocationSet) {
+      const location = { latitude: position.latitude, longitude: position.longitude };
+      setSelectedLocation(location);
+      setMarker(location);
+      reverseGeocode(position.latitude, position.longitude);
+      setInitialLocationSet(true);
+    } else if (!geoLoading && !position && !initialLocationSet) {
+      // GPS failed, use default (Nairobi)
+      const defaultLocation = { latitude: -1.2921, longitude: 36.8219 };
+      setSelectedLocation(defaultLocation);
+      setMarker(defaultLocation);
+      reverseGeocode(defaultLocation.latitude, defaultLocation.longitude);
+      setInitialLocationSet(true);
+    }
+  }, [position, geoLoading, initialLocationSet]);
 
   // Reverse geocode to get address from coordinates
   const reverseGeocode = useCallback(async (lat: number, lng: number) => {
@@ -53,11 +69,6 @@ const LocationPicker = () => {
     } finally {
       setIsLoadingAddress(false);
     }
-  }, []);
-
-  // Initial reverse geocode
-  useEffect(() => {
-    reverseGeocode(selectedLocation.latitude, selectedLocation.longitude);
   }, []);
 
   // Search for places
@@ -100,12 +111,6 @@ const LocationPicker = () => {
     setShowResults(false);
   };
 
-  const handleLocationChange = useCallback((newLocation: { latitude: number; longitude: number }) => {
-    setSelectedLocation(newLocation);
-    setMarker(newLocation);
-    reverseGeocode(newLocation.latitude, newLocation.longitude);
-  }, [reverseGeocode]);
-
   const handleMapClick = useCallback((event: mapboxgl.MapMouseEvent) => {
     const { lng, lat } = event.lngLat;
     setSelectedLocation({ latitude: lat, longitude: lng });
@@ -113,7 +118,18 @@ const LocationPicker = () => {
     reverseGeocode(lat, lng);
   }, [reverseGeocode]);
 
+  const handleUseMyLocation = () => {
+    if (position) {
+      const location = { latitude: position.latitude, longitude: position.longitude };
+      setSelectedLocation(location);
+      setMarker(location);
+      reverseGeocode(position.latitude, position.longitude);
+    }
+  };
+
   const handleConfirm = () => {
+    if (!selectedLocation) return;
+    
     // Determine return path based on current URL
     const returnPath = window.location.pathname.includes("offer-pool") 
       ? "/offer-pool" 
@@ -127,6 +143,18 @@ const LocationPicker = () => {
     
     navigate(`${returnPath}?${params.toString()}`, { replace: true });
   };
+
+  // Show loading while getting GPS
+  if (geoLoading && !initialLocationSet) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-background">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-2" />
+          <p className="text-muted-foreground">Getting your location...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen w-full relative bg-background">
@@ -162,24 +190,36 @@ const LocationPicker = () => {
             </div>
           )}
         </div>
+        
+        {/* Use My Location Button */}
+        <button
+          onClick={handleUseMyLocation}
+          disabled={!position}
+          className="mt-2 flex items-center gap-2 px-4 py-2 bg-card rounded-lg shadow text-sm text-primary font-medium hover:bg-muted/50 transition-colors disabled:opacity-50"
+        >
+          <Navigation className="h-4 w-4" />
+          Use my current location
+        </button>
       </div>
 
       {/* Map with center marker */}
-      <div className="h-full w-full">
-        <MapContainer
-          center={selectedLocation}
-          markers={[
-            {
-              latitude: marker.latitude,
-              longitude: marker.longitude,
-              color: mode === "source" ? "#10b981" : "#6366f1",
-            },
-          ]}
-          zoom={13}
-          onMapClick={handleMapClick}
-          className="w-full h-full"
-        />
-      </div>
+      {selectedLocation && (
+        <div className="h-full w-full">
+          <MapContainer
+            center={selectedLocation}
+            markers={marker ? [
+              {
+                latitude: marker.latitude,
+                longitude: marker.longitude,
+                color: mode === "source" ? "#10b981" : "#6366f1",
+              },
+            ] : []}
+            zoom={15}
+            onMapClick={handleMapClick}
+            className="w-full h-full"
+          />
+        </div>
+      )}
 
       {/* Location Card */}
       <div className="absolute bottom-0 left-0 right-0 bg-card rounded-t-3xl p-4 shadow-2xl">
@@ -205,7 +245,7 @@ const LocationPicker = () => {
         </div>
         <Button
           onClick={handleConfirm}
-          disabled={isLoadingAddress}
+          disabled={isLoadingAddress || !selectedLocation}
           className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-semibold"
         >
           Confirm location

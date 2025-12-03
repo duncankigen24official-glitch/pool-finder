@@ -1,139 +1,208 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
 import PoolCard from "@/components/my-trip/PoolCard";
 import RequestCard from "@/components/my-trip/RequestCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { Loader2 } from "lucide-react";
+import { format } from "date-fns";
+
+interface PoolData {
+  id: string;
+  source_address: string;
+  destination_address: string;
+  departure_time: string;
+  driver: {
+    full_name: string;
+    avatar_url: string | null;
+  } | null;
+}
+
+interface MyRide {
+  id: string;
+  pool: PoolData;
+}
+
+interface PoolRequest {
+  pool_id: string;
+  departure_time: string;
+  source_address: string;
+  destination_address: string;
+  riders: {
+    id: string;
+    name: string;
+    avatar: string;
+  }[];
+  requestCount: number;
+}
 
 const MyTrip = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("my-pool");
+  const [myRides, setMyRides] = useState<MyRide[]>([]);
+  const [myPoolRequests, setMyPoolRequests] = useState<PoolRequest[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Mock data for My Pool
-  const myPools = [
-    {
-      driver: {
-        name: "Hawkins",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Hawkins",
-        verified: true,
-      },
-      date: "Today",
-      time: "10:30 pm",
-      source: "6391 Elgin St. Celina,",
-      destination: "2464 Royal Ln. Mesa,",
-    },
-    {
-      driver: {
-        name: "Wilson",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Wilson",
-        verified: true,
-      },
-      date: "22 June",
-      time: "10:30 pm",
-      source: "6391 Elgin St. Celina,",
-      destination: "2464 Royal Ln. Mesa,",
-    },
-    {
-      driver: {
-        name: "Elenora",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Elenora",
-        verified: true,
-      },
-      date: "23 june",
-      time: "10:30 pm",
-      source: "6391 Elgin St. Celina,",
-      destination: "2464 Royal Ln. Mesa,",
-    },
-    {
-      driver: {
-        name: "Jacob",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jacob",
-        verified: true,
-      },
-      date: "24 june",
-      time: "10:30 pm",
-      source: "6391 Elgin St. Celina,",
-      destination: "2464 Royal Ln. Mesa,",
-    },
-    {
-      driver: {
-        name: "Jenny",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jenny",
-        verified: true,
-      },
-      date: "25 June",
-      time: "10:30 pm",
-      source: "6391 Elgin St. Celina,",
-      destination: "2464 Royal Ln. Mesa,",
-    },
-    {
-      driver: {
-        name: "Sojit",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sojit",
-        verified: true,
-      },
-      date: "26 june",
-      time: "10:30 pm",
-      source: "6391 Elgin St. Celina,",
-      destination: "2464 Royal Ln. Mesa,",
-    },
-  ];
+  useEffect(() => {
+    if (user) {
+      fetchData();
+    }
+  }, [user, activeTab]);
 
-  // Mock data for Request for Pool
-  const requests = [
-    {
-      riders: [
-        { name: "Jenny", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jenny1" },
-        { name: "Mike", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Mike1" },
-        { name: "Sarah", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah1" },
-        { name: "Tom", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Tom1" },
-      ],
-      date: "Today",
-      time: "10:30 pm",
-      source: "6391 Elgin St. Celina,",
-      destination: "2464 Royal Ln. Mesa,",
-      requestCount: 2,
-    },
-    {
-      riders: [
-        { name: "Alex", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex2" },
-        { name: "Chris", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Chris2" },
-        { name: "User3", avatar: "" },
-        { name: "User4", avatar: "" },
-      ],
-      date: "22 june",
-      time: "10:30 pm",
-      source: "6391 Elgin St. Celina,",
-      destination: "2464 Royal Ln. Mesa,",
-      requestCount: 4,
-    },
-    {
-      riders: [
-        { name: "Emma", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Emma3" },
-        { name: "Oliver", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Oliver3" },
-        { name: "Sophia", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sophia3" },
-        { name: "User4", avatar: "" },
-      ],
-      date: "23 june",
-      time: "10:30 pm",
-      source: "6391 Elgin St. Celina,",
-      destination: "2464 Royal Ln. Mesa,",
-      requestCount: 4,
-    },
-    {
-      riders: [
-        { name: "Liam", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Liam4" },
-        { name: "User2", avatar: "" },
-        { name: "User3", avatar: "" },
-        { name: "User4", avatar: "" },
-      ],
-      date: "24 june",
-      time: "10:30 pm",
-      source: "6391 Elgin St. Celina,",
-      destination: "2464 Royal Ln. Mesa,",
-      requestCount: 4,
-    },
-  ];
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      if (activeTab === "my-pool") {
+        await fetchMyRides();
+      } else {
+        await fetchPoolRequests();
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchMyRides = async () => {
+    // Fetch pools where user is a rider (accepted requests)
+    const { data: riderPools, error: riderError } = await supabase
+      .from('pool_requests')
+      .select(`
+        id,
+        pool:pools(
+          id,
+          source_address,
+          destination_address,
+          departure_time,
+          driver:profiles!driver_id(full_name, avatar_url)
+        )
+      `)
+      .eq('rider_id', user?.id)
+      .eq('status', 'accepted');
+
+    if (riderError) {
+      console.error("Error fetching rider pools:", riderError);
+    }
+
+    // Also fetch pools where user is a driver
+    const { data: driverPools, error: driverError } = await supabase
+      .from('pools')
+      .select(`
+        id,
+        source_address,
+        destination_address,
+        departure_time,
+        driver:profiles!driver_id(full_name, avatar_url)
+      `)
+      .eq('driver_id', user?.id)
+      .eq('status', 'active')
+      .gte('departure_time', new Date().toISOString());
+
+    if (driverError) {
+      console.error("Error fetching driver pools:", driverError);
+    }
+
+    // Combine and transform data
+    const ridesFromRequests = (riderPools || []).map(item => {
+      const pool = Array.isArray(item.pool) ? item.pool[0] : item.pool;
+      return {
+        id: item.id,
+        pool: {
+          ...pool,
+          driver: Array.isArray(pool?.driver) ? pool.driver[0] : pool?.driver
+        }
+      };
+    }).filter(item => item.pool);
+
+    const ridesAsDriver = (driverPools || []).map(pool => ({
+      id: pool.id,
+      pool: {
+        id: pool.id,
+        source_address: pool.source_address,
+        destination_address: pool.destination_address,
+        departure_time: pool.departure_time,
+        driver: Array.isArray(pool.driver) ? pool.driver[0] : pool.driver
+      }
+    }));
+
+    setMyRides([...ridesAsDriver, ...ridesFromRequests]);
+  };
+
+  const fetchPoolRequests = async () => {
+    // Fetch pools where user is the driver, along with pending requests
+    const { data: pools, error: poolsError } = await supabase
+      .from('pools')
+      .select(`
+        id,
+        source_address,
+        destination_address,
+        departure_time
+      `)
+      .eq('driver_id', user?.id)
+      .eq('status', 'active');
+
+    if (poolsError) {
+      console.error("Error fetching pools:", poolsError);
+      return;
+    }
+
+    const poolRequests: PoolRequest[] = [];
+
+    for (const pool of pools || []) {
+      // Get requests for this pool
+      const { data: requests, error: reqError } = await supabase
+        .from('pool_requests')
+        .select(`
+          id,
+          rider:profiles!rider_id(id, full_name, avatar_url)
+        `)
+        .eq('pool_id', pool.id);
+
+      if (reqError) {
+        console.error("Error fetching requests:", reqError);
+        continue;
+      }
+
+      if (requests && requests.length > 0) {
+        const riders = requests.map(req => {
+          const rider = Array.isArray(req.rider) ? req.rider[0] : req.rider;
+          return {
+            id: rider?.id || '',
+            name: rider?.full_name || 'Unknown',
+            avatar: rider?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${rider?.id}`
+          };
+        });
+
+        poolRequests.push({
+          pool_id: pool.id,
+          departure_time: pool.departure_time,
+          source_address: pool.source_address,
+          destination_address: pool.destination_address,
+          riders: riders.slice(0, 4), // Show max 4 avatars
+          requestCount: requests.filter(r => r).length
+        });
+      }
+    }
+
+    setMyPoolRequests(poolRequests);
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const today = new Date();
+    const isToday = date.toDateString() === today.toDateString();
+    
+    if (isToday) return "Today";
+    return format(date, "dd MMM");
+  };
+
+  const formatTime = (dateString: string) => {
+    return format(new Date(dateString), "h:mm a");
+  };
 
   return (
     <PageLayout>
@@ -161,33 +230,59 @@ const MyTrip = () => {
           </TabsList>
 
           <TabsContent value="my-pool" className="mt-0">
-            {myPools.map((pool, index) => (
-              <PoolCard
-                key={index}
-                driver={pool.driver}
-                date={pool.date}
-                time={pool.time}
-                source={pool.source}
-                destination={pool.destination}
-                buttonText="Pool info"
-                onButtonClick={() => navigate(`/find-pool/rider/${index + 1}`)}
-              />
-            ))}
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            ) : myRides.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">No active pools</p>
+                <p className="text-sm text-muted-foreground mt-1">Create a pool or join one to get started</p>
+              </div>
+            ) : (
+              myRides.map((ride) => (
+                <PoolCard
+                  key={ride.id}
+                  driver={{
+                    name: ride.pool.driver?.full_name || "Unknown",
+                    avatar: ride.pool.driver?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${ride.id}`,
+                    verified: true,
+                  }}
+                  date={formatDate(ride.pool.departure_time)}
+                  time={formatTime(ride.pool.departure_time)}
+                  source={ride.pool.source_address}
+                  destination={ride.pool.destination_address}
+                  buttonText="Pool info"
+                  onButtonClick={() => navigate(`/find-pool/rider/${ride.pool.id}`)}
+                />
+              ))
+            )}
           </TabsContent>
 
           <TabsContent value="request-for-pool" className="mt-0">
-            {requests.map((request, index) => (
-              <RequestCard
-                key={index}
-                riders={request.riders}
-                date={request.date}
-                time={request.time}
-                source={request.source}
-                destination={request.destination}
-                requestCount={request.requestCount}
-                onRequestsClick={() => navigate("/my-trip/requests")}
-              />
-            ))}
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            ) : myPoolRequests.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">No pool requests</p>
+                <p className="text-sm text-muted-foreground mt-1">When riders request to join your pool, they'll appear here</p>
+              </div>
+            ) : (
+              myPoolRequests.map((request) => (
+                <RequestCard
+                  key={request.pool_id}
+                  riders={request.riders}
+                  date={formatDate(request.departure_time)}
+                  time={formatTime(request.departure_time)}
+                  source={request.source_address}
+                  destination={request.destination_address}
+                  requestCount={request.requestCount}
+                  onRequestsClick={() => navigate(`/my-trip/requests?poolId=${request.pool_id}`)}
+                />
+              ))
+            )}
           </TabsContent>
         </Tabs>
       </div>

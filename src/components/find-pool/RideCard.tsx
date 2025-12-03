@@ -52,12 +52,10 @@ const RideCard = ({
               {verified && <CheckCircle className="h-4 w-4 text-success" />}
             </div>
             <div className="flex items-center gap-1 text-xs">
-              <span className="text-warning">★</span>
-              <span className="text-warning">★</span>
-              <span className="text-warning">★</span>
-              <span className="text-warning">★</span>
-              <span className="text-warning">★</span>
-              <span className="text-muted-foreground ml-1">({reviewCount} review)</span>
+              <span className="text-warning">
+                {'★'.repeat(Math.round(rating))}{'☆'.repeat(5 - Math.round(rating))}
+              </span>
+              <span className="text-muted-foreground ml-1">({reviewCount} review{reviewCount !== 1 ? 's' : ''})</span>
             </div>
           </div>
         </div>
