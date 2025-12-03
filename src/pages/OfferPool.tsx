@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar } from "lucide-react";
 import { format } from "date-fns";
+import { toast } from "sonner";
 import offerPoolHero from "@/assets/offer-pool-hero.png";
 
 const OfferPool = () => {
@@ -49,10 +50,25 @@ const OfferPool = () => {
   };
 
   const handleContinue = () => {
+    if (!sourceCoords || !sourceAddress) {
+      toast.error("Please select a pickup location");
+      return;
+    }
+    if (!destinationCoords || !destinationAddress) {
+      toast.error("Please select a destination");
+      return;
+    }
+    if (!selectedDateTime) {
+      toast.error("Please select date and time");
+      return;
+    }
+
     navigate("/offer-pool/details", {
       state: {
-        source: sourceAddress,
-        destination: destinationAddress,
+        sourceAddress,
+        destinationAddress,
+        sourceCoords,
+        destinationCoords,
         dateTime: selectedDateTime,
         recurring: recurringRide,
         days: selectedDays,

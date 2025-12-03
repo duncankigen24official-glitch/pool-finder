@@ -14,6 +14,208 @@ export type Database = {
   }
   public: {
     Tables: {
+      messages: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          pool_id: string
+          receiver_id: string
+          sender_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          pool_id: string
+          receiver_id: string
+          sender_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          pool_id?: string
+          receiver_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_pool_id_fkey"
+            columns: ["pool_id"]
+            isOneToOne: false
+            referencedRelation: "pools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_receiver_id_fkey"
+            columns: ["receiver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pool_requests: {
+        Row: {
+          created_at: string | null
+          dropoff_address: string | null
+          dropoff_lat: number | null
+          dropoff_lng: number | null
+          id: string
+          pickup_address: string | null
+          pickup_lat: number | null
+          pickup_lng: number | null
+          pool_id: string
+          rider_id: string
+          seats_requested: number | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          dropoff_address?: string | null
+          dropoff_lat?: number | null
+          dropoff_lng?: number | null
+          id?: string
+          pickup_address?: string | null
+          pickup_lat?: number | null
+          pickup_lng?: number | null
+          pool_id: string
+          rider_id: string
+          seats_requested?: number | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          dropoff_address?: string | null
+          dropoff_lat?: number | null
+          dropoff_lng?: number | null
+          id?: string
+          pickup_address?: string | null
+          pickup_lat?: number | null
+          pickup_lng?: number | null
+          pool_id?: string
+          rider_id?: string
+          seats_requested?: number | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pool_requests_pool_id_fkey"
+            columns: ["pool_id"]
+            isOneToOne: false
+            referencedRelation: "pools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pool_requests_rider_id_fkey"
+            columns: ["rider_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pools: {
+        Row: {
+          available_seats: number
+          created_at: string | null
+          currency: string | null
+          departure_time: string
+          destination_address: string
+          destination_lat: number
+          destination_lng: number
+          driver_id: string
+          facilities: string[] | null
+          id: string
+          instructions: string | null
+          is_recurring: boolean | null
+          price: number
+          recurring_days: string[] | null
+          source_address: string
+          source_lat: number
+          source_lng: number
+          status: string | null
+          total_seats: number
+          updated_at: string | null
+          vehicle_id: string | null
+        }
+        Insert: {
+          available_seats: number
+          created_at?: string | null
+          currency?: string | null
+          departure_time: string
+          destination_address: string
+          destination_lat: number
+          destination_lng: number
+          driver_id: string
+          facilities?: string[] | null
+          id?: string
+          instructions?: string | null
+          is_recurring?: boolean | null
+          price: number
+          recurring_days?: string[] | null
+          source_address: string
+          source_lat: number
+          source_lng: number
+          status?: string | null
+          total_seats: number
+          updated_at?: string | null
+          vehicle_id?: string | null
+        }
+        Update: {
+          available_seats?: number
+          created_at?: string | null
+          currency?: string | null
+          departure_time?: string
+          destination_address?: string
+          destination_lat?: number
+          destination_lng?: number
+          driver_id?: string
+          facilities?: string[] | null
+          id?: string
+          instructions?: string | null
+          is_recurring?: boolean | null
+          price?: number
+          recurring_days?: string[] | null
+          source_address?: string
+          source_lat?: number
+          source_lng?: number
+          status?: string | null
+          total_seats?: number
+          updated_at?: string | null
+          vehicle_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pools_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pools_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -49,6 +251,58 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      reviews: {
+        Row: {
+          comment: string | null
+          created_at: string | null
+          id: string
+          pool_id: string | null
+          rating: number
+          reviewee_id: string
+          reviewer_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string | null
+          id?: string
+          pool_id?: string | null
+          rating: number
+          reviewee_id: string
+          reviewer_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string | null
+          id?: string
+          pool_id?: string | null
+          rating?: number
+          reviewee_id?: string
+          reviewer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_pool_id_fkey"
+            columns: ["pool_id"]
+            isOneToOne: false
+            referencedRelation: "pools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_reviewee_id_fkey"
+            columns: ["reviewee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       vehicles: {
         Row: {
@@ -105,7 +359,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_rating: {
+        Args: { user_uuid: string }
+        Returns: {
+          average_rating: number
+          review_count: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
