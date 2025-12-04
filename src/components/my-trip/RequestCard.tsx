@@ -31,14 +31,20 @@ const RequestCard = ({
       className="bg-card rounded-xl p-4 shadow-sm mb-4 cursor-pointer hover:shadow-md transition-shadow"
     >
       <div className="flex items-start gap-3">
-        {/* Rider Avatars */}
-        <div className="grid grid-cols-2 gap-1">
-          {riders.slice(0, 4).map((rider, index) => (
-            <Avatar key={index} className="h-12 w-12">
-              <AvatarImage src={rider.avatar} alt={rider.name} />
-              <AvatarFallback>{rider.name.charAt(0)}</AvatarFallback>
-            </Avatar>
-          ))}
+        {/* Rider Avatars or Placeholder */}
+        <div className="grid grid-cols-2 gap-1 min-w-[100px]">
+          {riders.length > 0 ? (
+            riders.slice(0, 4).map((rider, index) => (
+              <Avatar key={index} className="h-12 w-12">
+                <AvatarImage src={rider.avatar} alt={rider.name} />
+                <AvatarFallback>{rider.name.charAt(0)}</AvatarFallback>
+              </Avatar>
+            ))
+          ) : (
+            <div className="col-span-2 h-12 w-24 rounded-lg bg-muted/50 flex items-center justify-center">
+              <span className="text-xs text-muted-foreground">No requests</span>
+            </div>
+          )}
         </div>
 
         {/* Trip Info */}

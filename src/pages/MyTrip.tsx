@@ -133,7 +133,7 @@ const MyTrip = () => {
   };
 
   const fetchPoolRequests = async () => {
-    // Fetch pools where user is the driver, along with pending requests
+    // Fetch ALL pools where user is the driver
     const { data: pools, error: poolsError } = await supabase
       .from('pools')
       .select(`
@@ -143,7 +143,9 @@ const MyTrip = () => {
         departure_time
       `)
       .eq('driver_id', user?.id)
-      .eq('status', 'active');
+      .eq('status', 'active')
+      .gte('departure_time', new Date().toISOString())
+      .order('departure_time', { ascending: true });
 
     if (poolsError) {
       console.error("Error fetching pools:", poolsError);
@@ -153,7 +155,7 @@ const MyTrip = () => {
     const poolRequests: PoolRequest[] = [];
 
     for (const pool of pools || []) {
-      // Get requests for this pool
+      // Get requests for this pool (if any)
       const { data: requests, error: reqError } = await supabase
         .from('pool_requests')
         .select(`
@@ -164,28 +166,26 @@ const MyTrip = () => {
 
       if (reqError) {
         console.error("Error fetching requests:", reqError);
-        continue;
       }
 
-      if (requests && requests.length > 0) {
-        const riders = requests.map(req => {
-          const rider = Array.isArray(req.rider) ? req.rider[0] : req.rider;
-          return {
-            id: rider?.id || '',
-            name: rider?.full_name || 'Unknown',
-            avatar: rider?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${rider?.id}`
-          };
-        });
+      const riders = (requests || []).map(req => {
+        const rider = Array.isArray(req.rider) ? req.rider[0] : req.rider;
+        return {
+          id: rider?.id || '',
+          name: rider?.full_name || 'Unknown',
+          avatar: rider?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${rider?.id}`
+        };
+      });
 
-        poolRequests.push({
-          pool_id: pool.id,
-          departure_time: pool.departure_time,
-          source_address: pool.source_address,
-          destination_address: pool.destination_address,
-          riders: riders.slice(0, 4), // Show max 4 avatars
-          requestCount: requests.filter(r => r).length
-        });
-      }
+      // Show ALL pools, not just those with requests
+      poolRequests.push({
+        pool_id: pool.id,
+        departure_time: pool.departure_time,
+        source_address: pool.source_address,
+        destination_address: pool.destination_address,
+        riders: riders.slice(0, 4), // Show max 4 avatars
+        requestCount: requests?.length || 0
+      });
     }
 
     setMyPoolRequests(poolRequests);

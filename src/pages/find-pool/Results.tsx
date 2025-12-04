@@ -111,6 +111,7 @@ const Results = () => {
           )
           .sort((a, b) => a.score! - b.score!); // Best matches first
       }
+      // If no coordinates provided, show all pools sorted by departure time (already sorted by query)
 
       setPools(transformedData);
 
