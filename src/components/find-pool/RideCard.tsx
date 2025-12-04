@@ -14,6 +14,8 @@ interface RideCardProps {
   availableSeats: number;
   totalSeats: number;
   dateTime: string;
+  sourceDistance?: number;
+  destDistance?: number;
 }
 
 const RideCard = ({
@@ -29,6 +31,8 @@ const RideCard = ({
   availableSeats,
   totalSeats,
   dateTime,
+  sourceDistance,
+  destDistance,
 }: RideCardProps) => {
   const navigate = useNavigate();
   const filledSeats = totalSeats - availableSeats;
@@ -66,11 +70,21 @@ const RideCard = ({
       <div className="space-y-2 mb-3">
         <div className="flex items-start gap-2">
           <div className="h-3 w-3 rounded-full bg-success mt-0.5" />
-          <p className="text-sm text-foreground flex-1">{sourceAddress}</p>
+          <div className="flex-1">
+            <p className="text-sm text-foreground">{sourceAddress}</p>
+            {sourceDistance !== undefined && (
+              <p className="text-xs text-muted-foreground">{sourceDistance.toFixed(1)} km from your pickup</p>
+            )}
+          </div>
         </div>
         <div className="flex items-start gap-2">
           <div className="h-3 w-3 rounded-full bg-primary mt-0.5" />
-          <p className="text-sm text-foreground flex-1">{destinationAddress}</p>
+          <div className="flex-1">
+            <p className="text-sm text-foreground">{destinationAddress}</p>
+            {destDistance !== undefined && (
+              <p className="text-xs text-muted-foreground">{destDistance.toFixed(1)} km from your destination</p>
+            )}
+          </div>
         </div>
       </div>
 

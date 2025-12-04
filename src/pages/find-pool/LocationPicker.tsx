@@ -130,14 +130,25 @@ const LocationPicker = () => {
   const handleConfirm = () => {
     if (!selectedLocation) return;
     
-    // Determine return path based on current URL
-    const returnPath = window.location.pathname.includes("offer-pool") 
-      ? "/offer-pool" 
-      : "/find-pool";
+    // Determine return path from URL param (defaults to find-pool)
+    const returnTo = searchParams.get("returnTo") || "find-pool";
+    const returnPath = `/${returnTo}`;
     
-    // Preserve ALL existing params and update the selected location
-    const params = new URLSearchParams(searchParams);
-    params.delete("mode"); // Remove mode param as it's only for LocationPicker
+    // Preserve existing location params and update the selected location
+    const params = new URLSearchParams();
+    
+    // Keep existing source/destination if they exist
+    const existingSource = searchParams.get("source");
+    const existingSourceAddress = searchParams.get("sourceAddress");
+    const existingDestination = searchParams.get("destination");
+    const existingDestinationAddress = searchParams.get("destinationAddress");
+    
+    if (existingSource && mode !== "source") params.set("source", existingSource);
+    if (existingSourceAddress && mode !== "source") params.set("sourceAddress", existingSourceAddress);
+    if (existingDestination && mode !== "destination") params.set("destination", existingDestination);
+    if (existingDestinationAddress && mode !== "destination") params.set("destinationAddress", existingDestinationAddress);
+    
+    // Set the new location
     params.set(mode, `${selectedLocation.latitude},${selectedLocation.longitude}`);
     params.set(`${mode}Address`, selectedAddress);
     
