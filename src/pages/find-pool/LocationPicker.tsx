@@ -107,8 +107,9 @@ const LocationPicker = () => {
     setSelectedLocation({ latitude: lat, longitude: lng });
     setMarker({ latitude: lat, longitude: lng });
     setSelectedAddress(result.place_name);
-    setSearchQuery(result.place_name);
-    setShowResults(false);
+    setSearchQuery(""); // Clear search query
+    setSearchResults([]); // Clear results
+    setShowResults(false); // Close dropdown
   };
 
   const handleMapClick = useCallback((event: mapboxgl.MapMouseEvent) => {
