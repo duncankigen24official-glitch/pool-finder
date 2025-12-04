@@ -41,11 +41,13 @@ const FindPool = () => {
   }, [searchParams]);
 
   const handleFindPool = () => {
-    // Navigate to results page
+    // Navigate to results page with coordinates for proximity matching
     navigate("/find-pool/results", {
       state: {
         source: sourceAddress,
         destination: destinationAddress,
+        sourceCoords,
+        destinationCoords,
         dateTime: selectedDateTime,
         seats: selectedSeats,
       },
@@ -90,6 +92,7 @@ const FindPool = () => {
               onClick={() => {
                 const params = new URLSearchParams(searchParams);
                 params.set("mode", "source");
+                params.set("returnTo", "find-pool");
                 navigate(`/find-pool/location-picker?${params.toString()}`);
               }}
             />
@@ -100,6 +103,7 @@ const FindPool = () => {
               onClick={() => {
                 const params = new URLSearchParams(searchParams);
                 params.set("mode", "destination");
+                params.set("returnTo", "find-pool");
                 navigate(`/find-pool/location-picker?${params.toString()}`);
               }}
             />

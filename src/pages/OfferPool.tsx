@@ -103,6 +103,7 @@ const OfferPool = () => {
               onClick={() => {
                 const params = new URLSearchParams(searchParams);
                 params.set("mode", "source");
+                params.set("returnTo", "offer-pool");
                 navigate(`/find-pool/location-picker?${params.toString()}`);
               }}
             />
@@ -113,6 +114,7 @@ const OfferPool = () => {
               onClick={() => {
                 const params = new URLSearchParams(searchParams);
                 params.set("mode", "destination");
+                params.set("returnTo", "offer-pool");
                 navigate(`/find-pool/location-picker?${params.toString()}`);
               }}
             />

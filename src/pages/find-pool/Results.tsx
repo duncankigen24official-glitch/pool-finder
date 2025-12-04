@@ -5,12 +5,17 @@ import RideCard from "@/components/find-pool/RideCard";
 import { Calendar, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
+import { haversineDistance } from "@/lib/geo";
 
 interface Pool {
   id: string;
   driver_id: string;
   source_address: string;
   destination_address: string;
+  source_lat: number;
+  source_lng: number;
+  destination_lat: number;
+  destination_lng: number;
   departure_time: string;
   price: number;
   currency: string;
@@ -25,11 +30,18 @@ interface Pool {
     vehicle_name: string;
     vehicle_type: string;
   } | null;
+  // Calculated fields
+  sourceDistance?: number;
+  destDistance?: number;
+  score?: number;
 }
+
+const SOURCE_RADIUS_KM = 10; // Max distance from user's pickup
+const DEST_RADIUS_KM = 15;   // Max distance from user's destination
 
 const Results = () => {
   const location = useLocation();
-  const { source, destination, dateTime, seats } = location.state || {};
+  const { source, destination, sourceCoords, destinationCoords, dateTime, seats } = location.state || {};
   const [pools, setPools] = useState<Pool[]>([]);
   const [loading, setLoading] = useState(true);
   const [reviewCounts, setReviewCounts] = useState<Record<string, { avg: number; count: number }>>({});
@@ -47,6 +59,10 @@ const Results = () => {
           driver_id,
           source_address,
           destination_address,
+          source_lat,
+          source_lng,
+          destination_lat,
+          destination_lng,
           departure_time,
           price,
           currency,
@@ -63,11 +79,38 @@ const Results = () => {
       if (error) throw error;
 
       // Transform the data to handle the array response from joins
-      const transformedData = (data || []).map(pool => ({
+      let transformedData = (data || []).map(pool => ({
         ...pool,
         driver: Array.isArray(pool.driver) ? pool.driver[0] : pool.driver,
         vehicle: Array.isArray(pool.vehicle) ? pool.vehicle[0] : pool.vehicle,
-      }));
+      })) as Pool[];
+
+      // If user provided coordinates, calculate distances and filter by proximity
+      if (sourceCoords && destinationCoords) {
+        transformedData = transformedData
+          .map(pool => {
+            const sourceDistance = haversineDistance(
+              sourceCoords.lat,
+              sourceCoords.lng,
+              Number(pool.source_lat),
+              Number(pool.source_lng)
+            );
+            const destDistance = haversineDistance(
+              destinationCoords.lat,
+              destinationCoords.lng,
+              Number(pool.destination_lat),
+              Number(pool.destination_lng)
+            );
+            const score = sourceDistance + destDistance;
+            
+            return { ...pool, sourceDistance, destDistance, score };
+          })
+          .filter(pool => 
+            pool.sourceDistance! <= SOURCE_RADIUS_KM && 
+            pool.destDistance! <= DEST_RADIUS_KM
+          )
+          .sort((a, b) => a.score! - b.score!); // Best matches first
+      }
 
       setPools(transformedData);
 
@@ -151,6 +194,8 @@ const Results = () => {
                   availableSeats={pool.available_seats}
                   totalSeats={pool.total_seats}
                   dateTime={format(new Date(pool.departure_time), "dd/MM/yyyy, h:mm a")}
+                  sourceDistance={pool.sourceDistance}
+                  destDistance={pool.destDistance}
                 />
               );
             })}
